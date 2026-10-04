@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { ordersRouter } from "./routes/orders";
 import { usersRouter } from "./routes/users";
+import { catalogRouter } from "./routes/catalog";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/orders", ordersRouter);
 app.use("/api/users", usersRouter);
+app.use("/api", catalogRouter);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 

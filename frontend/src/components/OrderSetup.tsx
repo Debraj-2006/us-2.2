@@ -1,20 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createOrder } from "../api";
 import type { Party } from "../types";
+
+export interface OrderPrefill {
+  tailorEmail: string;
+  description: string;
+  initialAmount: number;
+}
 
 interface Props {
   onJoin: (orderId: string) => void;
   role: Party;
   identity: string;
+  onManageCatalog?: () => void;
+  onBrowseCatalog?: (tailorEmail: string) => void;
+  prefill?: OrderPrefill | null;
 }
 
-export function OrderSetup({ onJoin, role, identity }: Props) {
+export function OrderSetup({ onJoin, role, identity, onManageCatalog, onBrowseCatalog, prefill }: Props) {
   const [existingOrderId, setExistingOrderId] = useState("");
   const [counterpartId, setCounterpartId] = useState("");
   const [description, setDescription] = useState("Custom stitched suit");
   const [initialAmount, setInitialAmount] = useState(1500);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (prefill) {
+      setCounterpartId(prefill.tailorEmail);
+      setDescription(prefill.description);
+      setInitialAmount(prefill.initialAmount);
+    }
+  }, [prefill]);
 
   async function handleCreate() {
     if (!counterpartId.trim()) {
@@ -45,7 +62,14 @@ export function OrderSetup({ onJoin, role, identity }: Props) {
 
   return (
     <div className="card">
-      <h2>Start a negotiation</h2>
+      <div className="button-row" style={{ justifyContent: "space-between" }}>
+        <h2 style={{ margin: 0 }}>Start a negotiation</h2>
+        {role === "tailor" && onManageCatalog && (
+          <button type="button" className="secondary" onClick={onManageCatalog}>
+            Manage my catalog
+          </button>
+        )}
+      </div>
 
       <div className="setup-columns">
         <section>
@@ -62,6 +86,17 @@ export function OrderSetup({ onJoin, role, identity }: Props) {
               placeholder={role === "tailor" ? "customer@example.com" : "tailor@example.com"}
             />
           </label>
+          {role === "customer" && onBrowseCatalog && (
+            <button
+              type="button"
+              className="secondary"
+              style={{ marginBottom: "0.9rem" }}
+              disabled={!counterpartId.trim()}
+              onClick={() => onBrowseCatalog(counterpartId.trim())}
+            >
+              Browse this tailor's catalog
+            </button>
+          )}
           <label className="field">
             Description
             <input value={description} onChange={(e) => setDescription(e.target.value)} />

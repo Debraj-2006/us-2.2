@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { BidHistory } from "./components/BidHistory";
+import { CatalogBrowser } from "./components/CatalogBrowser";
+import { CatalogManager } from "./components/CatalogManager";
 import { CustomerContactCard } from "./components/CustomerContactCard";
 import { IntroSection } from "./components/IntroSection";
 import { Login } from "./components/Login";
 import { NegotiationPanel } from "./components/NegotiationPanel";
-import { OrderSetup } from "./components/OrderSetup";
+import { OrderSetup, type OrderPrefill } from "./components/OrderSetup";
 import { PaymentPanel } from "./components/PaymentPanel";
 import { RoleGate } from "./components/RoleGate";
 import { TailorShopCard } from "./components/TailorShopCard";
@@ -25,6 +27,9 @@ function App() {
   const [authView, setAuthView] = useState(false);
   const [loginRole, setLoginRole] = useState<Party | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [managingCatalog, setManagingCatalog] = useState(false);
+  const [browsingTailorEmail, setBrowsingTailorEmail] = useState<string | null>(null);
+  const [orderPrefill, setOrderPrefill] = useState<OrderPrefill | null>(null);
   const { order, error, setOrder } = usePolledOrder(orderId);
 
   const signedIn = Boolean(user && profile);
@@ -88,7 +93,31 @@ function App() {
             <IntroSection onGetStarted={() => setAuthView(true)} />
           )
         ) : !orderId ? (
-          <OrderSetup onJoin={setOrderId} role={profile!.role} identity={profile!.email} />
+          managingCatalog ? (
+            <CatalogManager tailorId={profile!.id} onBack={() => setManagingCatalog(false)} />
+          ) : browsingTailorEmail ? (
+            <CatalogBrowser
+              tailorEmail={browsingTailorEmail}
+              onBack={() => setBrowsingTailorEmail(null)}
+              onSelectProduct={(product) => {
+                setOrderPrefill({
+                  tailorEmail: browsingTailorEmail,
+                  description: product.name,
+                  initialAmount: product.price,
+                });
+                setBrowsingTailorEmail(null);
+              }}
+            />
+          ) : (
+            <OrderSetup
+              onJoin={setOrderId}
+              role={profile!.role}
+              identity={profile!.email}
+              prefill={orderPrefill}
+              onManageCatalog={profile!.role === "tailor" ? () => setManagingCatalog(true) : undefined}
+              onBrowseCatalog={profile!.role === "customer" ? setBrowsingTailorEmail : undefined}
+            />
+          )
         ) : (
           <>
             <button

@@ -1,4 +1,4 @@
-import type { Order, Party, UserProfile } from "./types";
+import type { Category, Order, Party, Product, TailorCatalog, UserProfile } from "./types";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -73,4 +73,41 @@ export function upsertUser(params: {
   location?: string;
 }) {
   return request<UserProfile>("/api/users", { method: "POST", body: JSON.stringify(params) });
+}
+
+export function getCategories(tailorId: string) {
+  return request<Category[]>(`/api/tailors/${tailorId}/categories`);
+}
+
+export function createCategory(tailorId: string, name: string) {
+  return request<Category>(`/api/tailors/${tailorId}/categories`, {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export function deleteCategory(tailorId: string, categoryId: string) {
+  return request<void>(`/api/tailors/${tailorId}/categories/${categoryId}`, { method: "DELETE" });
+}
+
+export function getProducts(tailorId: string) {
+  return request<Product[]>(`/api/tailors/${tailorId}/products`);
+}
+
+export function createProduct(
+  tailorId: string,
+  params: { categoryId: string; name: string; price: number; imageUrl?: string; description?: string }
+) {
+  return request<Product>(`/api/tailors/${tailorId}/products`, {
+    method: "POST",
+    body: JSON.stringify(params),
+  });
+}
+
+export function deleteProduct(tailorId: string, productId: string) {
+  return request<void>(`/api/tailors/${tailorId}/products/${productId}`, { method: "DELETE" });
+}
+
+export function getCatalogByEmail(email: string) {
+  return request<TailorCatalog>(`/api/tailors/by-email/${encodeURIComponent(email)}/catalog`);
 }

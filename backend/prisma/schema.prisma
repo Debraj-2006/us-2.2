@@ -26,6 +26,41 @@ model User {
   phone     String?
   location  String?
   createdAt DateTime @default(now())
+
+  categories Category[]
+  products   Product[]
+}
+
+// A tailor's own grouping for their catalog (e.g. "Shirts", "Jeans", "Kurta").
+// Freeform and per-tailor, not a shared taxonomy.
+model Category {
+  id        String   @id @default(cuid())
+  tailor    User     @relation(fields: [tailorId], references: [id])
+  tailorId  String
+  name      String
+  createdAt DateTime @default(now())
+
+  products Product[]
+
+  @@unique([tailorId, name])
+}
+
+// A single catalog listing: a piece of clothing a tailor offers at a given
+// price, shown to customers browsing that tailor's catalog.
+model Product {
+  id          String   @id @default(cuid())
+  tailor      User     @relation(fields: [tailorId], references: [id])
+  tailorId    String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String
+  name        String
+  price       Float
+  imageUrl    String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([tailorId])
+  @@index([categoryId])
 }
 
 model Order {

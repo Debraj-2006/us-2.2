@@ -51,3 +51,30 @@ export interface UserProfile {
   phone: string | null;
   location: string | null;
 }
+
+export interface Category {
+  id: string;
+  tailorId: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface Product {
+  id: string;
+  tailorId: string;
+  categoryId: string;
+  name: string;
+  price: number;
+  imageUrl: string | null;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface CategoryWithProducts extends Category {
+  products: Product[];
+}
+
+export interface TailorCatalog {
+  tailor: { name: string; shopName: string | null };
+  categories: CategoryWithProducts[];
+}
