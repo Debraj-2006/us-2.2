@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+backend/prisma/dev.db
+backend/prisma/dev.db-journal

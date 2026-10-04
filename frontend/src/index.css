@@ -1,0 +1,63 @@
+:root {
+  /* Canvas: unbleached linen — the workroom's cutting cloth */
+  --canvas: #e4d7ba;
+  --canvas-raised: #fbf7ec;
+  /* Ink Wool: near-black suiting wool, used for the ledger header + primary text */
+  --ink: #23281f;
+  --ink-soft: #454c3f;
+  /* Loden: deep bottle-green wool, secondary dark surface */
+  --loden: #3b4a3c;
+  --loden-tint: #e4ebe1;
+  /* Brass Pin: the tailor's pin / button — primary accent */
+  --brass: #a8781f;
+  --brass-bright: #c69433;
+  --brass-tint: #f3e6c8;
+  /* Tacking Red: chalk pencil / tacking thread — used sparingly for reject/error */
+  --tack: #9c4433;
+  --tack-tint: #f5e2dc;
+  /* Chalk: near-white mark color for text on dark surfaces */
+  --chalk: #f7f4ea;
+
+  --line: rgba(35, 40, 31, 0.18);
+  --shadow: 0 2px 4px rgba(90, 66, 21, 0.08), 0 14px 28px -14px rgba(35, 40, 31, 0.35);
+  --shadow-lifted: 0 4px 8px rgba(90, 66, 21, 0.1), 0 20px 36px -16px rgba(35, 40, 31, 0.4);
+
+  --font-display: "Fraunces", "Iowan Old Style", serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background-color: var(--canvas);
+  background-image:
+    repeating-linear-gradient(45deg, rgba(35, 40, 31, 0.035) 0, rgba(35, 40, 31, 0.035) 1px, transparent 1px, transparent 7px),
+    repeating-linear-gradient(-45deg, rgba(35, 40, 31, 0.035) 0, rgba(35, 40, 31, 0.035) 1px, transparent 1px, transparent 7px);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

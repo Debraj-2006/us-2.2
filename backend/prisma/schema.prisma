@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no native enum support in Prisma, so the following are plain
+// strings constrained by application code:
+//   Order.status:  "negotiating" | "accepted" | "rejected" | "confirmed"
+//   Bid.proposedBy: "customer" | "tailor"
+//   Bid.status:     "pending" | "countered" | "accepted" | "rejected"
+
+// id is the Firebase Auth uid — this table just adds a name + a role that's
+// fixed at signup, since Firebase Auth itself has no concept of either.
+// shopName is tailor-only; phone/location are required for both roles and
+// shown to the other party so each side knows who they're dealing with.
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String
+  role      String
+  shopName  String?
+  phone     String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  customerId  String
+  tailorId    String
+  description String?
+  status      String   @default("negotiating")
+  agreedPrice Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bids    Bid[]
+  payment Payment?
+}
+
+model Bid {
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+  amount     Float
+  proposedBy String
+  message    String?
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Payment {
+  id                    String   @id @default(cuid())
+  order                 Order    @relation(fields: [orderId], references: [id])
+  orderId               String   @unique
+  amount                Float
+  stripePaymentIntentId String   @unique
+  clientSecret          String
+  status                String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
