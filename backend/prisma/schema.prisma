@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite has no native enum support in Prisma, so the following are plain
-// strings constrained by application code:
+// The following are plain strings constrained by application code
+// (kept as strings rather than enums to avoid a migration):
 //   Order.status:  "negotiating" | "accepted" | "rejected" | "confirmed"
 //   Bid.proposedBy: "customer" | "tailor"
 //   Bid.status:     "pending" | "countered" | "accepted" | "rejected"
